@@ -1,8 +1,6 @@
 <?php
 require_once 'db_connect.php';
 
-// 1. ЛОГІКА ОНОВЛЕННЯ СТАТУСУ (UPDATE)
-// Тепер перевіряємо просто наявність ticket_id та new_status у POST-запиті
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ticket_id']) && isset($_POST['new_status'])) {
     $ticket_id = (int)$_POST['ticket_id'];
     $new_status = $_POST['new_status'];
@@ -26,7 +24,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ticket_id']) && isset(
     }
 }
 
-// 2. ЛОГІКА ОТРИМАННЯ ДАНИХ (READ)
 try {
     $stmt = $pdo->query("SELECT * FROM tickets ORDER BY created_at DESC");
     $tickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
