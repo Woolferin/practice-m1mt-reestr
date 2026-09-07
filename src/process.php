@@ -1,44 +1,33 @@
 <?php
-require_once 'db_connect.php';
+require 'db_connect.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // ЗБЕРІГАЄМО ОРИГІНАЛЬНІ ДАНІ (без htmlspecialchars)
-    $full_name = trim($_POST['full_name']);
-    $category = trim($_POST['category']);
-    $address = trim($_POST['address']);
-    $description = trim($_POST['description']);
-    
-    // Отримуємо координати
-    $lat = isset($_POST['lat']) ? floatval($_POST['lat']) : null;
-    $lng = isset($_POST['lng']) ? floatval($_POST['lng']) : null;
+// Перевіряємо, чи дані прийшли через POST-запит
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Отримуємо дані
+    $name = trim($_POST['name'] ?? '');
+    $contact = trim($_POST['contact'] ?? '');
+    $address = trim($_POST['address'] ?? '');
+    $description = trim($_POST['description'] ?? '');
 
-    if (!empty($full_name) && !empty($category) && !empty($description) && $lat && $lng) {
-        try {
-            $sql = "INSERT INTO tickets (full_name, category, address, description, lat, lng) 
-                    VALUES (:full_name, :category, :address, :description, :lat, :lng)";
-            $stmt = $pdo->prepare($sql);
-            
-            $stmt->execute([
-                ':full_name' => $full_name,
-                ':category' => $category,
-                ':address' => $address,
-                ':description' => $description,
-                ':lat' => $lat,
-                ':lng' => $lng
-            ]);
-
-            echo "<div style='font-family: Arial; text-align: center; margin-top: 50px;'>";
-            echo "<h2 style='color: green;'>Ваше звернення та геолокацію успішно збережено!</h2>";
-            echo "<br><a href='index.php' style='padding: 10px 20px; background: #0056b3; color: white; text-decoration: none; border-radius: 4px;'>Повернутися на головну</a>";
-            echo "</div>";
-        } catch (PDOException $e) {
-            echo "Помилка збереження даних: " . $e->getMessage();
+    // Базова перевірка на порожні поля
+    if (!empty($name) && !empty($contact) && !empty($address) && !empty($description)) {
+        // Підготовлений запит для захисту від SQL-ін'єкцій
+        $sql = "INSERT INTO appeals (name, contact, address, description) VALUES (?, ?, ?, ?)";
+        $stmt = $pdo->prepare($sql);
+        
+        if ($stmt->execute([$name, $contact, $address, $description])) {
+            echo "<h3>Звернення успішно відправлено!</h3>";
+            echo "<a href='index.php'>Повернутися до форми</a>";
+        } else {
+            echo "<h3>Помилка при збереженні звернення.</h3>";
         }
     } else {
-        echo "Будь ласка, заповніть усі поля та обов'язково клікніть на карту!";
+        echo "<h3>Помилка: Заповніть усі поля.</h3>";
+        echo "<a href='index.php'>Повернутися назад</a>";
     }
 } else {
+    // Якщо зайшли на сторінку напряму через GET
     header("Location: index.php");
-    exit();
+    exit;
 }
 ?>

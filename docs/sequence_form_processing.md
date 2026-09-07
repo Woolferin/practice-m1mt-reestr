@@ -4,21 +4,17 @@
 
 ```mermaid
 sequenceDiagram
+    %%
     autonumber
     actor User as Громадянин
     participant Browser as Веб-браузер (Клієнт)
-    participant OSM as OpenStreetMap
     participant Server as Веб-сервер (process.php)
     participant DB as База даних (MariaDB)
 
     User->>Browser: Відкриває сторінку форми (index.php)
-    Browser->>OSM: Запит картографічних тайлів (Leaflet.js)
-    OSM-->>Browser: Повернення тайлів карти
-    User->>Browser: Взаємодія з картою (клік для вибору локації)
-    Browser-->>User: Відображення маркера та фіксація координат
     User->>Browser: Заповнення текстових полів та ініціація відправки (Submit)
     
-    Browser->>Server: HTTP POST запит (дані форми + lat, lng)
+    Browser->>Server: HTTP POST запит (дані форми)
     activate Server
     
     Server->>Server: Санітизація (trim) та валідація даних

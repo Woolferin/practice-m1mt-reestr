@@ -3,11 +3,18 @@ $host = '127.0.0.1';
 $db   = 'm1mt_reestr';
 $user = 'reestr_user';
 $pass = '12345';
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8mb4", $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
+    $pdo = new PDO($dsn, $user, $pass, $options);
+} catch (\PDOException $e) {
     die("Помилка підключення до бази даних: " . $e->getMessage());
 }
 ?>
